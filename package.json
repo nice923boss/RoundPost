@@ -1,0 +1,104 @@
+{
+  "name": "roundpost",
+  "version": "1.1.0",
+  "private": true,
+  "description": "串門子 RoundPost：社群內容管理與發佈工具",
+  "main": "./out/main/main.js",
+  "author": "黃政文",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "postinstall": "node node_modules/electron/install.js",
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "start": "electron-vite preview",
+    "typecheck": "node scripts/typecheck.mjs",
+    "test": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test \"tests/**/*.test.ts\"",
+    "pack": "npm run build && npx --yes electron-builder@26.15.3 --win --dir",
+    "dist": "npm run build && npx --yes electron-builder@26.15.3 --win"
+  },
+  "devDependencies": {
+    "@fullcalendar/core": "^6.1.22",
+    "@fullcalendar/daygrid": "^6.1.22",
+    "@fullcalendar/interaction": "^6.1.22",
+    "@fullcalendar/react": "^6.1.22",
+    "@tiptap/extension-link": "^2.27.3",
+    "@tiptap/extension-placeholder": "^2.27.3",
+    "@tiptap/pm": "^2.27.3",
+    "@tiptap/react": "^2.27.3",
+    "@tiptap/starter-kit": "^2.27.3",
+    "@types/node": "^24.9.0",
+    "@types/papaparse": "^5.3.15",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "chokidar": "^5.0.0",
+    "electron": "^44.9.0",
+    "electron-vite": "^6.0.0",
+    "marked": "^18.1.1",
+    "papaparse": "^5.7.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-router-dom": "^7.18.4",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.4",
+    "yaml": "^2.9.1",
+    "zod": "^4.6.7",
+    "zustand": "^5.0.15"
+  },
+  "build": {
+    "appId": "com.roundpost.app",
+    "productName": "RoundPost",
+    "icon": "resources/icon.png",
+    "files": [
+      "out/**/*",
+      "resources/256x256.png",
+      "package.json"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "asar": true,
+    "compression": "maximum",
+    "afterPack": "scripts/afterPack.cjs",
+    "electronLanguages": [
+      "zh-TW",
+      "en-US"
+    ],
+    "electronFuses": {
+      "runAsNode": false,
+      "enableCookieEncryption": true,
+      "enableNodeOptionsEnvironmentVariable": false,
+      "enableNodeCliInspectArguments": false,
+      "enableEmbeddedAsarIntegrityValidation": true,
+      "onlyLoadAppFromAsar": true
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "resources/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "resources/icon.png",
+      "category": "public.app-category.productivity"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "RoundPost",
+      "installerLanguages": [
+        "zh_TW"
+      ],
+      "language": "1028"
+    }
+  }
+}

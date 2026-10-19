@@ -1,0 +1,20 @@
+node_modules/
+out/
+release/
+*.db
+.env
+.env.local
+
+# HoloTeam memory system and local tooling (not part of the app)
+memory/
+.claude/
+CLAUDE.md
+SKILL-DESIGN-STANDARD.md
+_FOLDER_INFO.md
+
+# Local-only files
+*.lnk
+*.zip
+串門子社群發佈.txt
+串門子社群發佈工具.txt
+圓型貼文工具.txt
