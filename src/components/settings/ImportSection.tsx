@@ -42,6 +42,18 @@ export default function ImportSection() {
     }
   }
 
+  const saveTemplate = async () => {
+    setBusy(true)
+    try {
+      const saved = await api.saveImportTemplate()
+      if (saved) toast.success(`範本已儲存：${saved}`)
+    } catch (err) {
+      toast.error(`儲存範本失敗：${errorMessage(err)}`)
+    } finally {
+      setBusy(false)
+    }
+  }
+
   const runImport = async () => {
     if (!mapping.title) return
     setBusy(true)
@@ -68,11 +80,16 @@ export default function ImportSection() {
   return (
     <section className="settings-section">
       <h3>📊 匯入貼文</h3>
-      <p className="hint">支援 Excel（.xlsx）、CSV、TSV 與 Tab 分隔的 .txt。第一列必須是欄位名稱。標題與日期都相同的貼文會略過，不會重複建立。</p>
+      <p className="hint">
+        第一次使用建議先下載範本，照欄位填好再匯入。支援 Excel（.xlsx）、CSV、TSV 與 Tab 分隔的 .txt，第一列必須是欄位名稱。標題與日期都相同的貼文會略過，不會重複建立。
+      </p>
 
       <div className="settings-row">
         <button type="button" className="btn btn-secondary" onClick={() => void chooseFile()} disabled={busy}>
           📂 {selection ? '重新選擇檔案' : '選擇檔案'}
+        </button>
+        <button type="button" className="btn btn-secondary" onClick={() => void saveTemplate()} disabled={busy}>
+          📥 下載範本
         </button>
         {selection && <span className="muted" title={selection.file}>{fileName(selection.file)}，共 {preview?.totalRows ?? 0} 列</span>}
       </div>

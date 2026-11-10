@@ -6,6 +6,8 @@ export interface ConfirmOptions {
   confirmLabel?: string
   /** Shows the confirm button in red, for actions that delete something. */
   danger?: boolean
+  /** Keeps the confirm button disabled until the user types exactly this text. */
+  typeToConfirm?: string
 }
 
 interface ConfirmRequest extends ConfirmOptions {

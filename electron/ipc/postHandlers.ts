@@ -13,6 +13,7 @@ import {
   togglePostPlatformPublished,
   updatePost
 } from '../db/repositories/postRepository.ts'
+import { clearProjectPosts } from '../services/workspace.ts'
 
 export function registerPostHandlers(): void {
   handle('posts:getAll', z.tuple([PostFilters]), ([filters]) => getAllPosts(filters))
@@ -21,6 +22,7 @@ export function registerPostHandlers(): void {
   handle('posts:update', z.tuple([Id, UpdatePost]), ([id, changes]) => updatePost(id, changes))
   handle('posts:delete', z.tuple([Id]), ([id]) => deletePost(id))
   handle('posts:search', z.tuple([SearchQuery, PostFilters]), ([query, filters]) => searchPosts(query, filters))
+  handle('posts:clearAll', z.tuple([Id]), ([projectId]) => clearProjectPosts(projectId))
   handle('posts:markPublishedByDate', z.tuple([DateText]), ([date]) => markPublishedByDate(date))
 
   handle('postPlatforms:togglePublished', z.tuple([Id]), ([id]) => togglePostPlatformPublished(id))

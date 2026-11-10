@@ -1,5 +1,6 @@
 // Keeps the open project and the sync folder watcher in step. Free of electron imports so it can be tested.
 import { closeAllDbs, getOpenProjectId } from '../db/connection.ts'
+import { deleteAllPosts } from '../db/repositories/postRepository.ts'
 import {
   deleteProject,
   getActiveProject,
@@ -39,6 +40,19 @@ export async function setSyncFolder(folder: string): Promise<Project> {
   if (!id) throw new Error('尚未開啟任何專案')
   await stopWatching()
   return watchProject(setProjectSyncFolder(id, folder ? normalizeSyncFolder(folder) : ''))
+}
+
+/**
+ * Deletes every post of the open project so its calendar starts empty again. Syncing is turned off first,
+ * because the watcher would otherwise rebuild the posts from the files in the folder.
+ * The id guards against clearing a project the user switched to after confirming.
+ */
+export async function clearProjectPosts(id: string): Promise<{ deleted: number; project: Project }> {
+  if (getOpenProjectId() !== id) throw new Error('目前開啟的專案已變更，請重新操作')
+  const active = getActiveProject()
+  if (!active) throw new Error('尚未開啟任何專案')
+  const project = active.sync_folder ? await setSyncFolder('') : active
+  return { deleted: deleteAllPosts(), project }
 }
 
 /**

@@ -10,6 +10,7 @@ const electronAPI: ElectronAPI = {
   updatePost: (id, changes) => ipcRenderer.invoke('posts:update', id, changes),
   deletePost: (id) => ipcRenderer.invoke('posts:delete', id),
   searchPosts: (query, filters) => ipcRenderer.invoke('posts:search', query, filters),
+  clearAllPosts: (projectId) => ipcRenderer.invoke('posts:clearAll', projectId),
   markPublishedByDate: (date) => ipcRenderer.invoke('posts:markPublishedByDate', date),
 
   togglePublished: (postPlatformId) => ipcRenderer.invoke('postPlatforms:togglePublished', postPlatformId),
@@ -43,6 +44,7 @@ const electronAPI: ElectronAPI = {
 
   chooseImportFile: () => ipcRenderer.invoke('import:choose'),
   runImport: (mapping) => ipcRenderer.invoke('import:run', mapping),
+  saveImportTemplate: () => ipcRenderer.invoke('import:saveTemplate'),
 
   getTemplates: () => ipcRenderer.invoke('templates:getAll'),
   createTemplate: (input) => ipcRenderer.invoke('templates:create', input),

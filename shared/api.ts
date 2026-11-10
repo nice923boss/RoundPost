@@ -23,6 +23,12 @@ export interface ImportSelection {
   preview: ImportPreview
 }
 
+export interface ClearPostsResult {
+  deleted: number
+  /** The project afterwards; syncing is off when it was on. */
+  project: Project
+}
+
 export interface ElectronAPI {
   getPosts(filters?: PostFilters): Promise<PostWithPlatforms[]>
   getPost(id: string): Promise<PostWithPlatforms | null>
@@ -30,6 +36,8 @@ export interface ElectronAPI {
   updatePost(id: string, changes: UpdatePostInput): Promise<PostWithPlatforms>
   deletePost(id: string): Promise<boolean>
   searchPosts(query: string, filters?: PostFilters): Promise<PostWithPlatforms[]>
+  /** Deletes every post of the given project, which must be the open one, and turns its syncing off. */
+  clearAllPosts(projectId: string): Promise<ClearPostsResult>
   /** Marks the confirmed posts of the day as published and returns how many there were. */
   markPublishedByDate(date: string): Promise<number>
 
@@ -65,6 +73,8 @@ export interface ElectronAPI {
   chooseImportFile(): Promise<ImportSelection | null>
   /** Imports the file chosen last. */
   runImport(mapping: ColumnMapping): Promise<ImportResult>
+  /** Saves the import template where the user chooses; null when the dialog is cancelled. */
+  saveImportTemplate(): Promise<string | null>
 
   getTemplates(): Promise<Template[]>
   createTemplate(input: TemplateInput): Promise<Template>

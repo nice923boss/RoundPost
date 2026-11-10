@@ -206,6 +206,11 @@ export function deletePost(id: string): boolean {
   return getProjectDb().run('DELETE FROM posts WHERE id = ?', [id]).changes > 0
 }
 
+/** Deletes every post of the open project, drafts included. Returns how many there were. */
+export function deleteAllPosts(): number {
+  return getProjectDb().run('DELETE FROM posts').changes
+}
+
 /** Marks the confirmed posts of a day and all their platforms as published. Returns the number of posts. */
 export function markPublishedByDate(date: string): number {
   const db = getProjectDb()

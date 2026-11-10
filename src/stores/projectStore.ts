@@ -15,6 +15,8 @@ interface ProjectState {
   /** Returns false when the folder dialog was cancelled. */
   chooseSyncFolder: () => Promise<boolean>
   clearSyncFolder: () => Promise<void>
+  /** Deletes every post of the open project and turns its syncing off. Returns how many posts there were. */
+  clearAllPosts: () => Promise<number>
 }
 
 // Data of the previous project must not show while the next one loads.
@@ -59,6 +61,14 @@ export const useProjectStore = create<ProjectState>((set, get) => {
       replaceActive(project)
       return true
     },
-    clearSyncFolder: async () => replaceActive(await api.clearSyncFolder())
+    clearSyncFolder: async () => replaceActive(await api.clearSyncFolder()),
+    clearAllPosts: async () => {
+      const id = get().active?.id
+      if (!id) throw new Error('尚未開啟任何專案')
+      const { deleted, project } = await api.clearAllPosts(id)
+      replaceActive(project)
+      await usePostStore.getState().loadPosts()
+      return deleted
+    }
   }
 })

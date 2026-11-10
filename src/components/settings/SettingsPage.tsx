@@ -7,6 +7,9 @@ import { toast } from '../../stores/toastStore.ts'
 import ImportSection from './ImportSection.tsx'
 import { THEMES, type AppInfo, type SyncAction, type SyncStatus, type Theme } from '../../../shared/types.ts'
 
+// What the user types to confirm clearing every post.
+const CLEAR_PHRASE = '清除所有排程'
+
 const THEME_LABELS: Record<Theme, string> = { system: '跟隨系統', light: '淺色', dark: '深色' }
 
 const SYNC_ACTION_LABELS: Record<SyncAction, string> = {
@@ -26,6 +29,7 @@ export default function SettingsPage() {
   const active = useProjectStore((s) => s.active)
   const chooseSyncFolder = useProjectStore((s) => s.chooseSyncFolder)
   const clearSyncFolder = useProjectStore((s) => s.clearSyncFolder)
+  const clearAllPosts = useProjectStore((s) => s.clearAllPosts)
   const [theme, setTheme] = useState<Theme | null>(null)
   const [info, setInfo] = useState<AppInfo | null>(null)
   const [syncStatus, setSyncStatus] = useState<SyncStatus | null>(null)
@@ -85,6 +89,36 @@ export default function SettingsPage() {
       toast.success('已停止同步')
     } catch (err) {
       toast.error(`停止同步失敗：${errorMessage(err)}`)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const handleClearAll = async () => {
+    if (!active) return
+    setBusy(true)
+    try {
+      const count = (await api.getPosts()).length
+      if (count === 0) {
+        toast.info('這個專案目前沒有任何貼文')
+        return
+      }
+      const syncNote = active.sync_folder
+        ? '\n\n這個專案連結了同步資料夾，清除時會一併停止同步，避免貼文從資料夾重新建立。資料夾裡的檔案不會被刪除。'
+        : ''
+      const ok = await confirmAction({
+        title: `清除「${active.name}」的所有排程`,
+        message: `將刪除這個專案的全部 ${count} 篇貼文（含未排程的草稿），行事曆會回到空白。\n平台、範本與其他專案不受影響。此動作無法復原。${syncNote}`,
+        confirmLabel: '永久清除',
+        danger: true,
+        typeToConfirm: CLEAR_PHRASE
+      })
+      if (!ok) return
+      const deleted = await clearAllPosts()
+      await refreshSyncStatus()
+      toast.success(`已清除 ${deleted} 篇貼文`)
+    } catch (err) {
+      toast.error(`清除失敗：${errorMessage(err)}`)
     } finally {
       setBusy(false)
     }
@@ -161,6 +195,18 @@ export default function SettingsPage() {
       </section>
 
       <ImportSection />
+
+      <section className="settings-section">
+        <h3>🗑️ 清除所有排程（{active?.name ?? '目前專案'}）</h3>
+        <p className="hint">
+          刪除這個專案的全部貼文（含未排程的草稿），讓行事曆回到空白的初始狀態。平台、範本與其他專案不受影響。此動作無法復原，執行前需要輸入確認文字。
+        </p>
+        <div className="settings-row">
+          <button type="button" className="btn btn-danger" onClick={() => void handleClearAll()} disabled={busy || !active}>
+            🗑️ 清除所有排程
+          </button>
+        </div>
+      </section>
 
       <section className="settings-section">
         <h3>ℹ️ 關於</h3>
